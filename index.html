@@ -2,18 +2,13 @@
 <meta charset="utf-8">
 <style>
 
+svg {
+  border: 1px solid gray;
+}
 path {
   fill: none;
   stroke: #000;
-  stroke-width: .5px;
-}
-
-.land-boundary {
   stroke-width: 1px;
-}
-
-.county-boundary {
-  stroke: #aaa;
 }
 
 </style>
@@ -23,47 +18,32 @@ path {
 <script>
 
 var width = 960,
-    height = 500;
+    height = 800;
 
 var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+.attr("width", width)
+.attr("height", height);
 
-//d3.json("/toposi/cat-comarques.json", function(error, topology) {
-d3.json("/toposi/obcine.json", function(error, topology) {
+// central meridian for EPSG:3912 = 15
+var projection = d3.geo.transverseMercator().scale(1).translate([0,0]).rotate([-15,0,0]);
+var path = d3.geo.path().projection(projection);
+
+d3.json("/toposi/OB/obcine.topojson", function(error, topology) {
   if (error) throw error;
 
-  var OB = topojson.feature(topology, topology.objects.obcine_new);
-
-  // var s = 8*width/(b[1][0] - b[0][0]);
-  // projection.scale(s);
-  // projection.translate([0, 0]);
-  // var trans = projection([b[0][0], b[1][1]]);
-  // projection.translate([-1*trans[0], -1*trans[1]]);
-
-  var projection = d3.geo.transverseMercator().scale(1).translate([width/2, height/2]).rotate([0, 0]);
-  var path = d3.geo.path().projection(projection);
+  var OB = topojson.feature(topology, topology.objects.obcine);
 
   var b = path.bounds(OB);
-  var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
-  var t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1]))];
-
-  // s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-  // t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+  var s = .98 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+  var t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1]))/2];
 
   projection.scale(s).translate(t);
-
-  console.log(b);
-//  console.log(s);
-//  console.log(t);
 
   svg.selectAll("path")
     .data(OB.features)
     .enter()
     .append("path")
-    .attr("d", path)
-    .attr("class", "land-boundary");
-
+    .attr("d", path);
 });
 
 </script>
