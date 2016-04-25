@@ -7,7 +7,13 @@ svg {
 }
 path {
   fill: none;
-  stroke: #000;
+}
+.outer-border {
+  stroke: red;
+  stroke-width: 1px;
+}
+.inner-border {
+  stroke: yellow;
   stroke-width: 1px;
 }
 
@@ -15,35 +21,5 @@ path {
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
-<script>
+<script src="index_bundle.js"></script>
 
-var width = 960,
-    height = 800;
-
-var svg = d3.select("body").append("svg")
-.attr("width", width)
-.attr("height", height);
-
-// central meridian for EPSG:3912 = 15
-var projection = d3.geo.transverseMercator().scale(1).translate([0,0]).rotate([-15,0,0]);
-var path = d3.geo.path().projection(projection);
-
-d3.json("/toposi/OB/obcine.topojson", function(error, topology) {
-  if (error) throw error;
-
-  var OB = topojson.feature(topology, topology.objects.obcine);
-
-  var b = path.bounds(OB);
-  var s = .98 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
-  var t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1]))/2];
-
-  projection.scale(s).translate(t);
-
-  svg.selectAll("path")
-    .data(OB.features)
-    .enter()
-    .append("path")
-    .attr("d", path);
-});
-
-</script>

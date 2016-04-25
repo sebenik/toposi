@@ -18,6 +18,8 @@
   "homepage": "https://github.com/sebenik/toposi#readme",
   "dependencies": {
     "d3-browserify": "^3.4.12",
-    "geojson-validation": "^0.1.6"
+    "geojson-validation": "^0.1.6",
+    "openlayers": "^3.15.1",
+    "proj4": "^2.3.14"
   }
 }
